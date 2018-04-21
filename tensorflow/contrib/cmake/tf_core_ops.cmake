@@ -152,10 +152,10 @@ add_dependencies(tf_core_ops tf_core_cpu)
 # tf_debug_ops library
 ########################################################
 
-file(GLOB tf_debug_ops_srcs
-    "${tensorflow_source_dir}/tensorflow/core/ops/debug_ops.cc"
-)
-
-add_library(tf_debug_ops OBJECT ${tf_debug_ops_srcs})
-
-add_dependencies(tf_debug_ops tf_core_framework)
+#file(GLOB tf_debug_ops_srcs
+#    "${tensorflow_source_dir}/tensorflow/core/ops/debug_ops.cc"
+#)
+#
+#add_library(tf_debug_ops OBJECT ${tf_debug_ops_srcs})
+#
+#add_dependencies(tf_debug_ops tf_core_framework)

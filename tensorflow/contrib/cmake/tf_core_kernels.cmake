@@ -143,6 +143,7 @@ list(REMOVE_ITEM tf_core_kernels_srcs ${tf_core_kernels_cloud_srcs})
 endif()
 
 file(GLOB_RECURSE tf_core_kernels_exclude_srcs
+   "${tensorflow_source_dir}/tensorflow/core/kernels/debug_ops.*" # Add
    "${tensorflow_source_dir}/tensorflow/core/kernels/*test*.h"
    "${tensorflow_source_dir}/tensorflow/core/kernels/*test*.cc"
    "${tensorflow_source_dir}/tensorflow/core/kernels/*testutil.h"
