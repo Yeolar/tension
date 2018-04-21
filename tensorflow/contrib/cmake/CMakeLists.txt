@@ -78,7 +78,7 @@ if (NOT WIN32)
   # Options for linking other libraries
   option(systemlib_ZLIB "Use the system installed library as shared objects instead of downloading ZLIB and statically linking to it: ZLIB" OFF)
 
-  option(systemlib_ALL "Turn on every possible systemlib_* options" ON)
+  option(systemlib_ALL "Turn on every possible systemlib_* options" OFF)
   if (systemlib_ALL)
     set (systmelib_ZLIB ON)
   endif (systemlib_ALL)
