@@ -43,6 +43,7 @@ set(eigen_INSTALL ${CMAKE_CURRENT_BINARY_DIR}/eigen/install)
 ExternalProject_Add(eigen
     PREFIX eigen
     URL ${eigen_URL}
+    URL_HASH MD5=a4c9f67ee42ee6619d103ef61331bf86
     DOWNLOAD_DIR "${DOWNLOAD_LOCATION}"
     INSTALL_DIR "${eigen_INSTALL}"
     CMAKE_CACHE_ARGS
