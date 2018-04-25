@@ -346,6 +346,7 @@ if(NOT ${PYTHONINTERP_FOUND})
 endif()
 
 # Let's get to work!
+include(tf_protos)
 include(tf_core_framework)
 if (tensorflow_ENABLE_GPU)
   include(tf_stream_executor)
