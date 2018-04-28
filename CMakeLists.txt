@@ -378,3 +378,7 @@ endif()
 #if(tensorflow_BUILD_CC_TESTS OR tensorflow_BUILD_PYTHON_TESTS)
 #  include(tf_tests)
 #endif()
+
+include(tf_serving_protos)
+include(tf_serving)
+
