@@ -60,14 +60,6 @@ if (NOT tensorflow_CUDA_LIBRARY_PATH)
     set(tensorflow_CUDA_LIBRARY_PATH /usr/local/cuda/lib64)
 endif (NOT tensorflow_CUDA_LIBRARY_PATH)
 
-# Options for linking other libraries
-option(systemlib_ZLIB "Use the system installed library as shared objects instead of downloading ZLIB and statically linking to it: ZLIB" OFF)
-
-option(systemlib_ALL "Turn on every possible systemlib_* options" OFF)
-if (systemlib_ALL)
-    set (systmelib_ZLIB ON)
-endif (systemlib_ALL)
-
 set(BOOL_WIN32 OFF)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -120,8 +112,10 @@ if (tensorflow_ENABLE_JEMALLOC_SUPPORT)
   add_definitions(-DTENSORFLOW_USE_JEMALLOC -DJEMALLOC_EXPORT=)
 endif()
 
+find_package(Protobuf REQUIRED)
+find_package(ZLIB REQUIRED)
+
 # External dependencies
-include(external/zlib)
 include(external/gif)
 include(external/png)
 include(external/jpeg)
@@ -133,10 +127,10 @@ include(external/farmhash)
 include(external/fft2d)
 include(external/highwayhash)
 include(external/nsync)
-include(external/protobuf)
 include(external/re2)
 include(external/cub)
 include(external/sqlite)
+include(external/accelerator)
 include(external/raster)
 #if (tensorflow_BUILD_CC_TESTS)
 #  include(googletest)
@@ -155,36 +149,29 @@ set(tensorflow_EXTERNAL_LIBRARIES
     ${fft2d_STATIC_LIBRARIES}
     ${highwayhash_STATIC_LIBRARIES}
     ${nsync_STATIC_LIBRARIES}
-    ${protobuf_STATIC_LIBRARIES}
+    ${PROTOBUF_LIBRARIES}
+    ${ZLIB_LIBRARIES}
     ${re2_STATIC_LIBRARIES}
     ${sqlite_STATIC_LIBRARIES}
 )
 
-if (systemlib_ZLIB)
-  set(tensorflow_EXTERNAL_LIBRARIES ${tensorflow_EXTERNAL_LIBRARIES}
-      ${ZLIB_LIBRARIES})
-else (systemlib_ZLIB)
-  set(tensorflow_EXTERNAL_LIBRARIES ${tensorflow_EXTERNAL_LIBRARIES}
-    ${zlib_STATIC_LIBRARIES})
-endif (systemlib_ZLIB)
-
 set(tensorflow_EXTERNAL_DEPENDENCIES
-    zlib_copy_headers_to_destination
-    gif_copy_headers_to_destination
-    png_copy_headers_to_destination
-    jpeg_copy_headers_to_destination
-    lmdb_copy_headers_to_destination
+    gif
+    png
+    jpeg
+    lmdb
     jsoncpp
-    farmhash_copy_headers_to_destination
-    highwayhash_copy_headers_to_destination
-    nsync_copy_headers_to_destination
-    protobuf
+    farmhash
+    highwayhash
+    nsync
     eigen
     gemmlowp
     cub
     fft2d
     re2
-    sqlite_copy_headers_to_destination
+    sqlite
+    accelerator
+    raster
 )
 
 include_directories(
@@ -192,7 +179,6 @@ include_directories(
     ${PROJECT_SOURCE_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}
     # External dependencies.
-    ${zlib_INCLUDE_DIR}
     ${gif_INCLUDE_DIR}
     ${png_INCLUDE_DIR}
     ${jpeg_INCLUDE_DIR}
@@ -204,7 +190,6 @@ include_directories(
     ${highwayhash_INCLUDE_DIR}
     ${cub_INCLUDE_DIR}
     ${nsync_INCLUDE_DIR}
-    ${protobuf_INCLUDE_DIR}
     ${re2_INCLUDE_DIR}
     ${sqlite_INCLUDE_DIR}
 )
@@ -348,37 +333,39 @@ endif()
 
 # Let's get to work!
 include(tf_protos)
-include(tf_core_framework)
-if (tensorflow_ENABLE_GPU)
-  include(tf_stream_executor)
-endif()
 
-include(tf_core_cpu)
-include(tf_core_ops)
-include(tf_core_direct_session)
-include(tf_core_kernels)
-#if(tensorflow_ENABLE_GRPC_SUPPORT)
-#  include(tf_core_distributed_runtime)
+#include(tf_proto_texts)
+#include(tf_core_framework)
+#if (tensorflow_ENABLE_GPU)
+#  include(tf_stream_executor)
 #endif()
-# We include tf_cc_ops first, because tf_c depends on tf_cc.
-include(tf_cc_ops)
-include(tf_c)
-include(tf_grappler)
-include(tf_core_profiler)
-#if(tensorflow_BUILD_CC_EXAMPLE)
-#  include(tf_tutorials)
-#  include(tf_label_image_example)
+#
+#include(tf_core_cpu)
+#include(tf_core_ops)
+#include(tf_core_direct_session)
+#include(tf_core_kernels)
+##if(tensorflow_ENABLE_GRPC_SUPPORT)
+##  include(tf_core_distributed_runtime)
+##endif()
+## We include tf_cc_ops first, because tf_c depends on tf_cc.
+#include(tf_cc_ops)
+#include(tf_c)
+#include(tf_grappler)
+#include(tf_core_profiler)
+##if(tensorflow_BUILD_CC_EXAMPLE)
+##  include(tf_tutorials)
+##  include(tf_label_image_example)
+##endif()
+#include(tf_tools)
+##if(tensorflow_BUILD_PYTHON_BINDINGS)
+##  include(tf_python)
+##endif()
+#if(tensorflow_BUILD_SHARED_LIB)
+#  include(tf_shared_lib)
 #endif()
-include(tf_tools)
-#if(tensorflow_BUILD_PYTHON_BINDINGS)
-#  include(tf_python)
-#endif()
-if(tensorflow_BUILD_SHARED_LIB)
-  include(tf_shared_lib)
-endif()
-#if(tensorflow_BUILD_CC_TESTS OR tensorflow_BUILD_PYTHON_TESTS)
-#  include(tf_tests)
-#endif()
+##if(tensorflow_BUILD_CC_TESTS OR tensorflow_BUILD_PYTHON_TESTS)
+##  include(tf_tests)
+##endif()
 
 include(tf_serving_protos)
 include(tf_serving)

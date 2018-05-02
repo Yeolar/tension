@@ -51,10 +51,10 @@ flags = [
 '-isystem',
 '/usr/local/include',
 
-'-isystem', ROOT,
-'-isystem', os.path.join(ROOT, 'build'),    # pb generated file
 '-isystem', os.path.join(ROOT, 'build/accelerator/src/accelerator'),
 '-isystem', os.path.join(ROOT, 'build/raster/src/raster'),
+'-isystem', os.path.join(ROOT, 'build'),    # pb generated file
+'-isystem', ROOT,
 ]
 
 

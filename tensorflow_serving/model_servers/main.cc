@@ -49,13 +49,13 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "google/protobuf/wrappers.pb.h"
-#include "grpc++/security/server_credentials.h"
-#include "grpc++/server.h"
-#include "grpc++/server_builder.h"
-#include "grpc++/server_context.h"
-#include "grpc++/support/status.h"
-#include "grpc/grpc.h"
+//#include "google/protobuf/wrappers.pb.h"
+//#include "grpc++/security/server_credentials.h"
+//#include "grpc++/server.h"
+//#include "grpc++/server_builder.h"
+//#include "grpc++/server_context.h"
+//#include "grpc++/support/status.h"
+//#include "grpc/grpc.h"
 #include "tensorflow/cc/saved_model/tag_constants.h"
 #include "tensorflow/core/lib/core/status.h"
 #include "tensorflow/core/lib/strings/numbers.h"
@@ -67,11 +67,11 @@ limitations under the License.
 #include "tensorflow/core/platform/types.h"
 #include "tensorflow/core/protobuf/config.pb.h"
 #include "tensorflow/core/util/command_line_flags.h"
-#include "tensorflow_serving/apis/prediction_service.grpc.pb.h"
+//#include "tensorflow_serving/apis/prediction_service.grpc.pb.h"
 #include "tensorflow_serving/apis/prediction_service.pb.h"
 #include "tensorflow_serving/config/model_server_config.pb.h"
 #include "tensorflow_serving/core/availability_preserving_policy.h"
-#include "tensorflow_serving/model_servers/grpc_status_util.h"
+//#include "tensorflow_serving/model_servers/grpc_status_util.h"
 #include "tensorflow_serving/model_servers/model_platform_types.h"
 #include "tensorflow_serving/model_servers/model_service_impl.h"
 #include "tensorflow_serving/model_servers/platform_config_util.h"
@@ -105,10 +105,10 @@ using tensorflow::serving::TensorflowPredictor;
 using tensorflow::serving::TensorflowRegressionServiceImpl;
 using tensorflow::serving::UniquePtrWithDeps;
 
-using grpc::InsecureServerCredentials;
-using grpc::Server;
-using grpc::ServerBuilder;
-using grpc::ServerContext;
+//using grpc::InsecureServerCredentials;
+//using grpc::Server;
+//using grpc::ServerBuilder;
+//using grpc::ServerContext;
 using tensorflow::serving::ClassificationRequest;
 using tensorflow::serving::ClassificationResponse;
 using tensorflow::serving::GetModelMetadataRequest;

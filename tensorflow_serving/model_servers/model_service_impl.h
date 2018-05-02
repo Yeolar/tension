@@ -16,27 +16,31 @@ limitations under the License.
 #ifndef TENSORFLOW_SERVING_MODEL_SERVERS_MODEL_SERVICE_IMPL_H_
 #define TENSORFLOW_SERVING_MODEL_SERVERS_MODEL_SERVICE_IMPL_H_
 
-#include "grpc++/server_context.h"
-#include "grpc++/support/status.h"
+//#include "grpc++/server_context.h"
+//#include "grpc++/support/status.h"
 #include "tensorflow_serving/apis/model_management.pb.h"
-#include "tensorflow_serving/apis/model_service.grpc.pb.h"
+//#include "tensorflow_serving/apis/model_service.grpc.pb.h"
 #include "tensorflow_serving/apis/model_service.pb.h"
 #include "tensorflow_serving/model_servers/server_core.h"
 
 namespace tensorflow {
 namespace serving {
 
-class ModelServiceImpl final : public ModelService::Service {
+class ModelServiceImpl : public ModelService {
  public:
   explicit ModelServiceImpl(ServerCore *core) : core_(core) {}
 
-  ::grpc::Status GetModelStatus(::grpc::ServerContext *context,
-                                const GetModelStatusRequest *request,
-                                GetModelStatusResponse *response) override;
+  virtual void GetModelStatus(
+      ::google::protobuf::RpcController* controller,
+      const ::tensorflow::serving::GetModelStatusRequest* request,
+      ::tensorflow::serving::GetModelStatusResponse* response,
+      ::google::protobuf::Closure* done) override;
 
-  ::grpc::Status HandleReloadConfigRequest(::grpc::ServerContext *context,
-                                           const ReloadConfigRequest *request,
-                                           ReloadConfigResponse *response);
+  virtual void HandleReloadConfigRequest(
+      ::google::protobuf::RpcController* controller,
+      const ::tensorflow::serving::ReloadConfigRequest* request,
+      ::tensorflow::serving::ReloadConfigResponse* response,
+      ::google::protobuf::Closure* done) override;
 
  private:
   ServerCore *core_;

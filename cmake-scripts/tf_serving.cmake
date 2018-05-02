@@ -33,6 +33,7 @@ file(GLOB tf_serving_model_servers_srcs
 )
 
 file(GLOB tf_serving_model_servers_exclude_srcs
+    "${PROJECT_SOURCE_DIR}/tensorflow_serving/model_servers/grpc_status_util.*"
     "${PROJECT_SOURCE_DIR}/tensorflow_serving/model_servers/*test.cc"
 )
 
@@ -110,4 +111,5 @@ target_link_libraries(tf_serving
     tensorflow
     tf_serving_protos_cc
 )
+add_dependencies(tf_serving ${tensorflow_EXTERNAL_DEPENDENCIES})
 

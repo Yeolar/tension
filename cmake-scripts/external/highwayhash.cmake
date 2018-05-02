@@ -1,14 +1,12 @@
 include (ExternalProject)
 
-set(highwayhash_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/highwayhash)
-set(highwayhash_STATIC_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/highwayhash/install/lib/libhighwayhash.a)
-
 set(highwayhash_URL https://github.com/google/highwayhash.git)
 set(highwayhash_TAG be5edafc2e1a455768e260ccd68ae7317b6690ee)
 set(highwayhash_BUILD ${CMAKE_CURRENT_BINARY_DIR}/highwayhash/src/highwayhash)
 set(highwayhash_INSTALL ${CMAKE_CURRENT_BINARY_DIR}/highwayhash/install)
 
-set(highwayhash_HEADERS "${highwayhash_BUILD}/highwayhash/*.h")
+set(highwayhash_INCLUDE_DIR ${highwayhash_INSTALL}/include)
+set(highwayhash_STATIC_LIBRARIES ${highwayhash_INSTALL}/lib/libhighwayhash.a)
 
 ExternalProject_Add(highwayhash
     PREFIX highwayhash
@@ -25,13 +23,3 @@ ExternalProject_Add(highwayhash
         -DCMAKE_INSTALL_PREFIX:STRING=${highwayhash_INSTALL}
 )
 
-# put highwayhash includes in the directory where they are expected
-add_custom_target(highwayhash_create_destination_dir
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${highwayhash_INCLUDE_DIR}/highwayhash
-    DEPENDS highwayhash)
-
-add_custom_target(highwayhash_copy_headers_to_destination
-    DEPENDS highwayhash_create_destination_dir)
-
-add_custom_command(TARGET highwayhash_copy_headers_to_destination PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${highwayhash_INSTALL}/include/ ${highwayhash_INCLUDE_DIR}/highwayhash)

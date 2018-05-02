@@ -3,6 +3,8 @@
 ########################################################
 
 file(GLOB_RECURSE tf_serving_protos_cc_srcs RELATIVE ${PROJECT_SOURCE_DIR}
+    "${PROJECT_SOURCE_DIR}/tensorflow/contrib/session_bundle/manifest.proto"
+
     "${PROJECT_SOURCE_DIR}/tensorflow_serving/apis/*.proto"
     "${PROJECT_SOURCE_DIR}/tensorflow_serving/config/*.proto"
     "${PROJECT_SOURCE_DIR}/tensorflow_serving/core/*.proto"

@@ -15,22 +15,27 @@ limitations under the License.
 
 #include "tensorflow_serving/model_servers/model_service_impl.h"
 
+#include <accelerator/ScopeGuard.h>
 #include "tensorflow_serving/model_servers/get_model_status_impl.h"
-#include "tensorflow_serving/model_servers/grpc_status_util.h"
+//#include "tensorflow_serving/model_servers/grpc_status_util.h"
 #include "tensorflow_serving/util/status_util.h"
 
 namespace tensorflow {
 namespace serving {
 
-::grpc::Status ModelServiceImpl::GetModelStatus(
-    ::grpc::ServerContext *context, const GetModelStatusRequest *request,
-    GetModelStatusResponse *response) {
-  const ::grpc::Status status = tensorflow::serving::ToGRPCStatus(
-      GetModelStatusImpl::GetModelStatus(core_, *request, response));
+void ModelServiceImpl::GetModelStatus(
+    ::google::protobuf::RpcController* controller,
+    const ::tensorflow::serving::GetModelStatusRequest* request,
+    ::tensorflow::serving::GetModelStatusResponse* response,
+    ::google::protobuf::Closure* done) {
+  SCOPE_EXIT {
+    done->Run();
+  };
+  tensorflow::Status status =
+    GetModelStatusImpl::GetModelStatus(core_, *request, response);
   if (!status.ok()) {
     VLOG(1) << "GetModelStatus failed: " << status.error_message();
   }
-  return status;
 }
 
 ::grpc::Status ModelServiceImpl::HandleReloadConfigRequest(

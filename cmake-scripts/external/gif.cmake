@@ -1,16 +1,12 @@
 include (ExternalProject)
 
-set(gif_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/external/gif_archive/giflib-5.1.4/)
-set(gif_STATIC_LIBRARIES ${CMAKE_BINARY_DIR}/gif/install/lib/libgif.a)
-
 set(gif_URL https://mirror.bazel.build/ufpr.dl.sourceforge.net/project/giflib/giflib-5.1.4.tar.gz)
 set(gif_HASH SHA256=34a7377ba834397db019e8eb122e551a49c98f49df75ec3fcc92b9a794a4f6d1)
-set(gif_INSTALL ${CMAKE_BINARY_DIR}/gif/install)
 set(gif_BUILD ${CMAKE_BINARY_DIR}/gif/src/gif)
+set(gif_INSTALL ${CMAKE_BINARY_DIR}/gif/install)
 
-set(gif_HEADERS
-    "${gif_INSTALL}/include/gif_lib.h"
-)
+set(gif_INCLUDE_DIR ${gif_INSTALL}/include)
+set(gif_STATIC_LIBRARIES ${gif_INSTALL}/lib/libgif.a)
 
 set(ENV{CFLAGS} "$ENV{CFLAGS} -fPIC")
 
@@ -30,15 +26,3 @@ ExternalProject_Add(gif
         --enable-shared=yes
 )
 
-# put gif includes in the directory where they are expected
-add_custom_target(gif_create_destination_dir
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${gif_INCLUDE_DIR}
-    DEPENDS gif)
-
-add_custom_target(gif_copy_headers_to_destination
-    DEPENDS gif_create_destination_dir)
-
-foreach(header_file ${gif_HEADERS})
-    add_custom_command(TARGET gif_copy_headers_to_destination PRE_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${header_file} ${gif_INCLUDE_DIR}/)
-endforeach()

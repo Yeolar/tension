@@ -114,11 +114,11 @@ file(GLOB_RECURSE tf_core_framework_exclude_srcs
 
 list(REMOVE_ITEM tf_core_framework_srcs ${tf_core_framework_exclude_srcs})
 
-set(tf_version_srcs ${PROJECT_SOURCE_DIR}/tensorflow/core/util/version_info.cc)
+#set(tf_version_srcs ${PROJECT_SOURCE_DIR}/tensorflow/core/util/version_info.cc)
 
 add_library(tf_core_framework OBJECT
     ${tf_core_framework_srcs}
-    ${tf_version_srcs}
+    #    ${tf_version_srcs}
     ${PROTO_TEXT_HDRS}
     ${PROTO_TEXT_SRCS}
 )
