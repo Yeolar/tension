@@ -4,6 +4,11 @@ cmake_minimum_required(VERSION 3.5)
 # Project
 project(tensorflow C CXX)
 
+# Set project version
+set(VERSION_MAJOR 1)
+set(VERSION_MINOR 0)
+set(VERSION_PATCH 0)
+
 # Set C++14 as standard for the whole project
 set(CMAKE_CXX_STANDARD 11)
 
