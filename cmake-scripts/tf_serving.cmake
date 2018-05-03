@@ -1,3 +1,17 @@
+## session_bundle
+
+file(GLOB tf_session_bundle_srcs
+    "${PROJECT_SOURCE_DIR}/tensorflow/contrib/session_bundle/*.h"
+    "${PROJECT_SOURCE_DIR}/tensorflow/contrib/session_bundle/*.cc"
+)
+
+file(GLOB tf_session_bundle_exclude_srcs
+    "${PROJECT_SOURCE_DIR}/tensorflow/contrib/session_bundle/*test*.h"
+    "${PROJECT_SOURCE_DIR}/tensorflow/contrib/session_bundle/*test*.cc"
+)
+
+list(REMOVE_ITEM tf_session_bundle_srcs ${tf_session_bundle_exclude_srcs})
+
 ## batching
 
 file(GLOB tf_serving_batching_srcs
@@ -99,6 +113,7 @@ list(REMOVE_ITEM tf_serving_util_srcs ${tf_serving_util_exclude_srcs})
 ###
 
 add_executable(tf_serving
+    ${tf_session_bundle_srcs}
     ${tf_serving_batching_srcs}
     ${tf_serving_core_srcs}
     ${tf_serving_model_servers_srcs}
@@ -108,8 +123,10 @@ add_executable(tf_serving
     ${tf_serving_util_srcs}
 )
 target_link_libraries(tf_serving
-    tensorflow
     tf_serving_protos_cc
+    tf_protos_cc
+    tensorflow
+    ${tensorflow_EXTERNAL_LIBRARIES}
 )
 add_dependencies(tf_serving ${tensorflow_EXTERNAL_DEPENDENCIES})
 

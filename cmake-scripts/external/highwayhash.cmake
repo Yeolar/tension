@@ -5,7 +5,7 @@ set(highwayhash_TAG be5edafc2e1a455768e260ccd68ae7317b6690ee)
 set(highwayhash_BUILD ${CMAKE_CURRENT_BINARY_DIR}/highwayhash/src/highwayhash)
 set(highwayhash_INSTALL ${CMAKE_CURRENT_BINARY_DIR}/highwayhash/install)
 
-set(highwayhash_INCLUDE_DIR ${highwayhash_INSTALL}/include)
+set(highwayhash_INCLUDE_DIR ${highwayhash_BUILD})
 set(highwayhash_STATIC_LIBRARIES ${highwayhash_INSTALL}/lib/libhighwayhash.a)
 
 ExternalProject_Add(highwayhash

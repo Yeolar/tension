@@ -49,6 +49,12 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
+#include <accelerator/ScopeGuard.h>
+#include "raster/framework/Config.h"
+#include "raster/framework/HubAdaptor.h"
+#include "raster/framework/Signal.h"
+#include "raster/protocol/proto/AsyncClient.h"
+#include "raster/protocol/proto/AsyncServer.h"
 //#include "google/protobuf/wrappers.pb.h"
 //#include "grpc++/security/server_credentials.h"
 //#include "grpc++/server.h"
@@ -170,95 +176,112 @@ ProtoType ReadProtoFromFile(const string& file) {
   return proto;
 }
 
+/*
 int DeadlineToTimeoutMillis(const gpr_timespec deadline) {
   return gpr_time_to_millis(
       gpr_time_sub(gpr_convert_clock_type(deadline, GPR_CLOCK_MONOTONIC),
                    gpr_now(GPR_CLOCK_MONOTONIC)));
 }
+*/
 
-class PredictionServiceImpl final : public PredictionService::Service {
+class PredictionServiceImpl : public PredictionService {
  public:
   explicit PredictionServiceImpl(ServerCore* core, bool use_saved_model)
       : core_(core),
         predictor_(new TensorflowPredictor(use_saved_model)),
         use_saved_model_(use_saved_model) {}
 
-  grpc::Status Predict(ServerContext* context, const PredictRequest* request,
-                       PredictResponse* response) override {
+  void Predict(::google::protobuf::RpcController* controller,
+               const PredictRequest* request,
+               PredictResponse* response,
+               ::google::protobuf::Closure* done) override {
+    SCOPE_EXIT { done->Run(); };
     tensorflow::RunOptions run_options = tensorflow::RunOptions();
     // By default, this is infinite which is the same default as RunOptions.
-    run_options.set_timeout_in_ms(
-        DeadlineToTimeoutMillis(context->raw_deadline()));
-    const grpc::Status status = tensorflow::serving::ToGRPCStatus(
-        predictor_->Predict(run_options, core_, *request, response));
+    //run_options.set_timeout_in_ms(
+    //    DeadlineToTimeoutMillis(context->raw_deadline()));
+    //const grpc::Status status = tensorflow::serving::ToGRPCStatus(
+    auto status = predictor_->Predict(run_options, core_, *request, response);
     if (!status.ok()) {
       VLOG(1) << "Predict failed: " << status.error_message();
     }
-    return status;
+    //return status;
   }
 
-  grpc::Status GetModelMetadata(ServerContext* context,
-                                const GetModelMetadataRequest* request,
-                                GetModelMetadataResponse* response) override {
+  void GetModelMetadata(::google::protobuf::RpcController* controller,
+                        const GetModelMetadataRequest* request,
+                        GetModelMetadataResponse* response,
+                        ::google::protobuf::Closure* done) override {
+    SCOPE_EXIT { done->Run(); };
     if (!use_saved_model_) {
+      /*
       return tensorflow::serving::ToGRPCStatus(
           tensorflow::errors::InvalidArgument(
               "GetModelMetadata API is only available when use_saved_model is "
               "set to true"));
+              */
     }
-    const grpc::Status status = tensorflow::serving::ToGRPCStatus(
-        GetModelMetadataImpl::GetModelMetadata(core_, *request, response));
+    //const grpc::Status status = tensorflow::serving::ToGRPCStatus(
+    auto status = GetModelMetadataImpl::GetModelMetadata(core_, *request, response);
     if (!status.ok()) {
       VLOG(1) << "GetModelMetadata failed: " << status.error_message();
     }
-    return status;
+    //return status;
   }
 
-  grpc::Status Classify(ServerContext* context,
-                        const ClassificationRequest* request,
-                        ClassificationResponse* response) override {
+  void Classify(::google::protobuf::RpcController* controller,
+                const ClassificationRequest* request,
+                ClassificationResponse* response,
+                ::google::protobuf::Closure* done) override {
+    SCOPE_EXIT { done->Run(); };
     tensorflow::RunOptions run_options = tensorflow::RunOptions();
     // By default, this is infinite which is the same default as RunOptions.
-    run_options.set_timeout_in_ms(
-        DeadlineToTimeoutMillis(context->raw_deadline()));
-    const grpc::Status status = tensorflow::serving::ToGRPCStatus(
-        TensorflowClassificationServiceImpl::Classify(run_options, core_,
-                                                      *request, response));
+    //run_options.set_timeout_in_ms(
+    //   DeadlineToTimeoutMillis(context->raw_deadline()));
+    //const grpc::Status status = tensorflow::serving::ToGRPCStatus(
+    auto status = TensorflowClassificationServiceImpl::Classify(run_options, core_,
+                                                      *request, response);
     if (!status.ok()) {
       VLOG(1) << "Classify request failed: " << status.error_message();
     }
-    return status;
+    //return status;
   }
 
-  grpc::Status Regress(ServerContext* context, const RegressionRequest* request,
-                       RegressionResponse* response) override {
+  void Regress(::google::protobuf::RpcController* controller,
+               const RegressionRequest* request,
+               RegressionResponse* response,
+               ::google::protobuf::Closure* done) override {
+    SCOPE_EXIT { done->Run(); };
     tensorflow::RunOptions run_options = tensorflow::RunOptions();
     // By default, this is infinite which is the same default as RunOptions.
-    run_options.set_timeout_in_ms(
-        DeadlineToTimeoutMillis(context->raw_deadline()));
-    const grpc::Status status = tensorflow::serving::ToGRPCStatus(
-        TensorflowRegressionServiceImpl::Regress(run_options, core_, *request,
-                                                 response));
+    //run_options.set_timeout_in_ms(
+    //    DeadlineToTimeoutMillis(context->raw_deadline()));
+    //const grpc::Status status = tensorflow::serving::ToGRPCStatus(
+    auto status = TensorflowRegressionServiceImpl::Regress(run_options, core_, *request,
+                                                 response);
     if (!status.ok()) {
       VLOG(1) << "Regress request failed: " << status.error_message();
     }
-    return status;
+    //return status;
   }
 
-  grpc::Status MultiInference(ServerContext* context,
-                              const MultiInferenceRequest* request,
-                              MultiInferenceResponse* response) override {
+  void MultiInference(::google::protobuf::RpcController* controller,
+                      const MultiInferenceRequest* request,
+                      MultiInferenceResponse* response,
+                      ::google::protobuf::Closure* done) override {
+    SCOPE_EXIT { done->Run(); };
     tensorflow::RunOptions run_options = tensorflow::RunOptions();
     // By default, this is infinite which is the same default as RunOptions.
-    run_options.set_timeout_in_ms(
-        DeadlineToTimeoutMillis(context->raw_deadline()));
-    const grpc::Status status =
-        tensorflow::serving::ToGRPCStatus(RunMultiInferenceWithServerCore(
-            run_options, core_, *request, response));
+    //run_options.set_timeout_in_ms(
+    //    DeadlineToTimeoutMillis(context->raw_deadline()));
+    //const grpc::Status status =
+    //    tensorflow::serving::ToGRPCStatus(
+    auto status = RunMultiInferenceWithServerCore(
+            run_options, core_, *request, response);
     if (!status.ok()) {
       VLOG(1) << "MultiInference request failed: " << status.error_message();
     }
-    return status;
+    //return status;
   }
 
  private:
@@ -290,32 +313,16 @@ std::vector<GrpcChannelArgument> parseGrpcChannelArgs(
 
 void RunServer(int port, std::unique_ptr<ServerCore> core, bool use_saved_model,
                const string& grpc_channel_arguments) {
+  auto service = acc::make_unique<rdd::PBAsyncServer>("Predictor");
   // "0.0.0.0" is the way to listen on localhost in gRPC.
   const string server_address = "0.0.0.0:" + std::to_string(port);
-  tensorflow::serving::ModelServiceImpl model_service(core.get());
-  PredictionServiceImpl prediction_service(core.get(), use_saved_model);
-  ServerBuilder builder;
-  std::shared_ptr<grpc::ServerCredentials> creds = InsecureServerCredentials();
-  builder.AddListeningPort(server_address, creds);
-  builder.RegisterService(&model_service);
-  builder.RegisterService(&prediction_service);
-  builder.SetMaxMessageSize(tensorflow::kint32max);
-  const std::vector<GrpcChannelArgument> channel_arguments =
-      parseGrpcChannelArgs(grpc_channel_arguments);
-  for (GrpcChannelArgument channel_argument : channel_arguments) {
-    // gRPC accept arguments of two types, int and string. We will attempt to
-    // parse each arg as int and pass it on as such if successful. Otherwise we
-    // will pass it as a string. gRPC will log arguments that were not accepted.
-    int value;
-    if (tensorflow::strings::safe_strto32(channel_argument.key, &value)) {
-      builder.AddChannelArgument(channel_argument.key, value);
-    } else {
-      builder.AddChannelArgument(channel_argument.key, channel_argument.value);
-    }
-  }
-  std::unique_ptr<Server> server(builder.BuildAndStart());
+
+  service->addService(std::make_shared<tensorflow::serving::ModelServiceImpl>(core.get()));
+  service->addService(std::make_shared<PredictionServiceImpl>(core.get(), use_saved_model));
+  acc::Singleton<rdd::HubAdaptor>::get()->addService(std::move(service));
+
   LOG(INFO) << "Running ModelServer at " << server_address << " ...";
-  server->Wait();
+  acc::Singleton<rdd::HubAdaptor>::get()->startService();
 }
 
 // Parses an ascii PlatformConfigMap protobuf from 'file'.

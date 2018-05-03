@@ -28,9 +28,7 @@ void ModelServiceImpl::GetModelStatus(
     const ::tensorflow::serving::GetModelStatusRequest* request,
     ::tensorflow::serving::GetModelStatusResponse* response,
     ::google::protobuf::Closure* done) {
-  SCOPE_EXIT {
-    done->Run();
-  };
+  SCOPE_EXIT { done->Run(); };
   tensorflow::Status status =
     GetModelStatusImpl::GetModelStatus(core_, *request, response);
   if (!status.ok()) {
@@ -38,9 +36,12 @@ void ModelServiceImpl::GetModelStatus(
   }
 }
 
-::grpc::Status ModelServiceImpl::HandleReloadConfigRequest(
-    ::grpc::ServerContext *context, const ReloadConfigRequest *request,
-    ReloadConfigResponse *response) {
+void ModelServiceImpl::HandleReloadConfigRequest(
+    ::google::protobuf::RpcController* controller,
+    const ReloadConfigRequest *request,
+    ReloadConfigResponse *response,
+    ::google::protobuf::Closure* done) {
+  SCOPE_EXIT { done->Run(); };
   ModelServerConfig server_config = request->config();
   Status status;
   switch (server_config.config_case()) {
@@ -70,7 +71,7 @@ void ModelServiceImpl::GetModelStatus(
 
   const StatusProto status_proto = ToStatusProto(status);
   *response->mutable_status() = status_proto;
-  return ToGRPCStatus(status);
+  //return ToGRPCStatus(status);
 }
 
 }  // namespace serving

@@ -97,7 +97,8 @@ endif()
 add_definitions(-DEIGEN_AVOID_STL_ARRAY)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -std=c++11")
+    #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-exceptions -std=c++11")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
 if (tensorflow_OPTIMIZE_FOR_NATIVE_ARCH)
@@ -112,6 +113,8 @@ if (tensorflow_ENABLE_JEMALLOC_SUPPORT)
   add_definitions(-DTENSORFLOW_USE_JEMALLOC -DJEMALLOC_EXPORT=)
 endif()
 
+find_package(Boost REQUIRED COMPONENTS context regex)
+find_package(GFlags REQUIRED)
 find_package(Protobuf REQUIRED)
 find_package(ZLIB REQUIRED)
 
@@ -149,10 +152,14 @@ set(tensorflow_EXTERNAL_LIBRARIES
     ${fft2d_STATIC_LIBRARIES}
     ${highwayhash_STATIC_LIBRARIES}
     ${nsync_STATIC_LIBRARIES}
+    ${Boost_LIBRARIES}
+    ${GFLAGS_LIBRARIES}
     ${PROTOBUF_LIBRARIES}
     ${ZLIB_LIBRARIES}
     ${re2_STATIC_LIBRARIES}
     ${sqlite_STATIC_LIBRARIES}
+    ${accelerator_STATIC_LIBRARIES}
+    ${raster_STATIC_LIBRARIES}
 )
 
 set(tensorflow_EXTERNAL_DEPENDENCIES
@@ -192,6 +199,8 @@ include_directories(
     ${nsync_INCLUDE_DIR}
     ${re2_INCLUDE_DIR}
     ${sqlite_INCLUDE_DIR}
+    ${accelerator_INCLUDE_DIR}
+    ${raster_INCLUDE_DIR}
 )
 
 #if(tensorflow_ENABLE_SSL_SUPPORT)
@@ -334,38 +343,38 @@ endif()
 # Let's get to work!
 include(tf_protos)
 
-#include(tf_proto_texts)
-#include(tf_core_framework)
-#if (tensorflow_ENABLE_GPU)
-#  include(tf_stream_executor)
+include(tf_proto_texts)
+include(tf_core_framework)
+if (tensorflow_ENABLE_GPU)
+  include(tf_stream_executor)
+endif()
+
+include(tf_core_cpu)
+include(tf_core_ops)
+include(tf_core_direct_session)
+include(tf_core_kernels)
+#if(tensorflow_ENABLE_GRPC_SUPPORT)
+#  include(tf_core_distributed_runtime)
 #endif()
-#
-#include(tf_core_cpu)
-#include(tf_core_ops)
-#include(tf_core_direct_session)
-#include(tf_core_kernels)
-##if(tensorflow_ENABLE_GRPC_SUPPORT)
-##  include(tf_core_distributed_runtime)
-##endif()
-## We include tf_cc_ops first, because tf_c depends on tf_cc.
-#include(tf_cc_ops)
-#include(tf_c)
-#include(tf_grappler)
-#include(tf_core_profiler)
-##if(tensorflow_BUILD_CC_EXAMPLE)
-##  include(tf_tutorials)
-##  include(tf_label_image_example)
-##endif()
-#include(tf_tools)
-##if(tensorflow_BUILD_PYTHON_BINDINGS)
-##  include(tf_python)
-##endif()
-#if(tensorflow_BUILD_SHARED_LIB)
-#  include(tf_shared_lib)
+# We include tf_cc_ops first, because tf_c depends on tf_cc.
+include(tf_cc_ops)
+include(tf_c)
+include(tf_grappler)
+include(tf_core_profiler)
+#if(tensorflow_BUILD_CC_EXAMPLE)
+#  include(tf_tutorials)
+#  include(tf_label_image_example)
 #endif()
-##if(tensorflow_BUILD_CC_TESTS OR tensorflow_BUILD_PYTHON_TESTS)
-##  include(tf_tests)
-##endif()
+include(tf_tools)
+#if(tensorflow_BUILD_PYTHON_BINDINGS)
+#  include(tf_python)
+#endif()
+if(tensorflow_BUILD_SHARED_LIB)
+  include(tf_shared_lib)
+endif()
+#if(tensorflow_BUILD_CC_TESTS OR tensorflow_BUILD_PYTHON_TESTS)
+#  include(tf_tests)
+#endif()
 
 include(tf_serving_protos)
 include(tf_serving)
