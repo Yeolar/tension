@@ -3,7 +3,7 @@
 include(ExternalProject)
 
 set(raster_URL https://github.com/Yeolar/raster.git)
-set(raster_TAG v1.2.1)
+set(raster_TAG v1.2.2)
 set(raster_BUILD ${CMAKE_CURRENT_BINARY_DIR}/raster/)
 set(raster_INCLUDE_DIR ${CMAKE_CURRENT_BINARY_DIR}/raster/src/raster)
 set(raster_STATIC_LIBRARIES ${CMAKE_CURRENT_BINARY_DIR}/raster/src/raster/libraster.a)
